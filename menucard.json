@@ -1,0 +1,46 @@
+[
+  {
+    "Items": "Fish and Chips",
+    "Price": 10
+  },
+  {
+    "Items": "Potato",
+    "Price": 8
+  },
+  {
+    "Items": "Bhaji",
+    "Price": 5
+  },
+  {
+    "Items": "Spaghetti with Meatballs",
+    "Price": 9
+  },
+  {
+    "Items": "Burger",
+    "Price": 5
+  },
+  {
+    "Items": "Chips",
+    "Price": 100
+  },
+  {
+    "Items": "BRIYANI",
+    "Price": 150
+  },
+  {
+    "Items": "FISH BRIYANI",
+    "Price": 125
+  },
+  {
+    "Items": "CHICKEN TIKKA",
+    "Price": 90
+  },
+  {
+    "Items": "FRIED RICE",
+    "Price": 100
+  },
+  {
+    "Items": "EGG RICE",
+    "Price": 70
+  }
+]
