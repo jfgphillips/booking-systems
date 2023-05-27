@@ -1,10 +1,10 @@
 import json
-from datetime import datetime
-import smtplib
 import random
+import smtplib
+from datetime import datetime
 from email.message import EmailMessage
 
-from utils.parsers import string_input_parser, integer_input_parser
+from utils.parsers import integer_input_parser, string_input_parser
 
 
 # app logic and function codes are in the class of booking system
@@ -146,7 +146,12 @@ class BookingSystem:
             "________________________________________________ \n Item No. --*-- Items--------*-- Price -------*-- Quantity"
         )
         for orderItem in self.ordereditems:
-            S, Is, Pe, Qy = str(count + 1), orderItem["Items"], str(orderItem["Price"]), str(orderItem["Quantity"])
+            S, Is, Pe, Qy = (
+                str(count + 1),
+                orderItem["Items"],
+                str(orderItem["Price"]),
+                str(orderItem["Quantity"]),
+            )
             print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00A3 -------*-- " + Qy + "-Qty")
             count += 1
         print("********* total amount:" + str(self.currentRateItems()) + "\u00A3 ******")
@@ -181,8 +186,6 @@ class BookingSystem:
                 print("total price: " + str(self.currentRateItems()) + "\u00A3")
             elif choice == "D" or choice == "d":
                 exit()
-
-
 
 
 # 6 digit number random generate

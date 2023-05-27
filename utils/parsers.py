@@ -1,4 +1,3 @@
-
 def string_input_parser(prompt: str):
     """
     Validates that a users input, provided to pythons `input()` function, is a string
