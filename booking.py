@@ -4,15 +4,7 @@ import smtplib
 from datetime import datetime
 from email.message import EmailMessage
 
-from utils.parsers import integer_input_parser
-from utils.parsers import string_input_parser
-
-
-
-
-
-
-
+from utils.parsers import integer_input_parser, string_input_parser
 
 
 # app logic and function codes are in the class of booking system
@@ -72,14 +64,10 @@ class BookingSystem:
         # Showing ordered Items this codes.
         for orderItem in self.ordereditems:
             print(orderItem)
-        print(
-            "_______________________________________ \n editor is on \n _______________________________________"
-        )
+        print("_______________________________________ \n editor is on \n _______________________________________")
         editKey = int(input("Enter your want to edit Serial No: "))
         if editKey <= len(self.ordereditems):
-            print(
-                "if you want to delete item type--'D' \n if you want to edit quality of item type-- 'Q'"
-            )
+            print("if you want to delete item type--'D' \n if you want to edit quality of item type-- 'Q'")
             choice = input("Type your Choice: ")
             if choice == "D" or choice == "d":
                 self.ordereditems.pop(editKey - 1)
@@ -88,9 +76,7 @@ class BookingSystem:
                 quantity = int(input("Enter your Change Quantity of Dish: "))
                 self.ordereditems[editKey - 1]["Quantity"] = quantity
 
-                print(
-                    "sucessfully changed Quantity! \n_______________________________________"
-                )
+                print("sucessfully changed Quantity! \n_______________________________________")
 
     def selectQuantity(self):
         try:
@@ -104,9 +90,7 @@ class BookingSystem:
     def selectDishes(self):
         for orderItem in self.ordereditems:
             print(orderItem)
-        print(
-            "_______________________________________ \n Select your Dish \n_______________________________________"
-        )
+        print("_______________________________________ \n Select your Dish \n_______________________________________")
 
         notFinished = True
         while notFinished:
@@ -116,9 +100,7 @@ class BookingSystem:
                 quantity = self.selectQuantity()
                 selDish["Quantity"] = quantity
                 self.ordereditems.append(selDish)
-                print(
-                    "sucessfully registered \n_______________________________________"
-                )
+                print("sucessfully registered \n_______________________________________")
                 notFinished = False
             else:
                 print("Invalid Item")
@@ -134,9 +116,7 @@ class BookingSystem:
 
     # completiion of order and send to final process of billing
     def toCompleteOrder(self):
-        print(
-            "Is your order complete? \n To Finish type --'Y' \n To continue type--'N'"
-        )
+        print("Is your order complete? \n To Finish type --'Y' \n To continue type--'N'")
         confirmation = input("Type you decison: ")
         if confirmation == "Y" or confirmation == "y":
             print("Orders are registered!")
@@ -150,9 +130,7 @@ class BookingSystem:
 
     # Editing frist entered mail and it will otp authentication process
     def editEmail(self):
-        print(
-            "_______________________________________ \n Edit email ID \n_________________________________"
-        )
+        print("_______________________________________ \n Edit email ID \n_________________________________")
         changeEmail = input("Enter your new Email ID: ")
         Otp = gen_otp()
         message = "it is your OTP: " + str(Otp)
@@ -174,21 +152,9 @@ class BookingSystem:
                 str(orderItem["Price"]),
                 str(orderItem["Quantity"]),
             )
-            print(
-                " "
-                + S
-                + " --*-- "
-                + Is
-                + "--------*-- "
-                + Pe
-                + "\u00A3 -------*-- "
-                + Qy
-                + "-Qty"
-            )
+            print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00A3 -------*-- " + Qy + "-Qty")
             count += 1
-        print(
-            "********* total amount:" + str(self.currentRateItems()) + "\u00A3 ******"
-        )
+        print("********* total amount:" + str(self.currentRateItems()) + "\u00A3 ******")
         print("\n Delivery address:" + str(self.address) + "\n")
         waittoconfirm = True
         while waittoconfirm:
@@ -215,17 +181,7 @@ class BookingSystem:
                         str(orderItem["Price"]),
                         str(orderItem["Quantity"]),
                     )
-                    print(
-                        " "
-                        + S
-                        + " --*-- "
-                        + Is
-                        + "--------*-- "
-                        + Pe
-                        + "\u00A3 -------*-- "
-                        + Qy
-                        + "-Qty"
-                    )
+                    print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00A3 -------*-- " + Qy + "-Qty")
                     count += 1
                 print("total price: " + str(self.currentRateItems()) + "\u00A3")
             elif choice == "D" or choice == "d":
