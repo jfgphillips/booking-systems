@@ -4,7 +4,7 @@ import smtplib
 import random
 from email.message import EmailMessage
 
-from utils.validators import number_input_parser
+from utils.parsers import string_input_parser, integer_input_parser
 
 
 # app logic and function codes are in the class of booking system
@@ -94,7 +94,7 @@ class BookingSystem:
 
         notFinished = True
         while notFinished:
-            sltDishId = number_input_parser("Enter Item No. : ")
+            sltDishId = integer_input_parser("Enter Item No. : ")
             if sltDishId <= len(self.Dishes):
                 selDish = self.Dishes[sltDishId - 1]
                 quantity = self.selectQuantity()
