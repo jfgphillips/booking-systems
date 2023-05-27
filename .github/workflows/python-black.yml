@@ -6,20 +6,19 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout branch
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-
-      - name: Setup Python env
-        uses: actions/setup-python@v3
-
-      - name: Install black and reorder-python-imports
-        run: pip install black reorder-python-imports
-
-      - name: Black and Sort changed files
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
+      - name: Get changed files
+        id: changed-files
         run: |
-          black --check reorder-python-imports ${{ steps.changed-files.outputs.all_changed_files }}
-
-      - name: Run black on full codebase
-        uses: psf/black@stable
+          if ${{ github.event_name == 'pull_request' }}; then
+              echo "changed_files=$(git diff --name-only -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
+          else
+              echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
+          fi
+      - name: List changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.changed_files }}; do
+              echo "$file was changed"
+          done
