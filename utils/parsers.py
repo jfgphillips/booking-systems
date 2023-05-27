@@ -13,7 +13,9 @@ def string_input_parser(prompt: str):
         except ValueError:
             print("something went wrong")
         except KeyboardInterrupt:
-            print("You pressed control-c, you want to quit? \n\n To quit press 'Q' \n To continue press 'C'")
+            print(
+                "You pressed control-c, you want to quit? \n\n To quit press 'Q' \n To continue press 'C'"
+            )
             cho = string_input_parser("Enter your choice: ")
             if cho == "Q" or cho == "q":
                 exit()
