@@ -1,25 +1,23 @@
 import json
-import random
-import smtplib
-from datetime import datetime
-from email.message import EmailMessage
+import re
 
-from utils.parsers import integer_input_parser, string_input_parser
+from utils.customer import Customer
+from utils.parsers import integer_input_parser
+from utils.parsers import is_valid_choice
+from utils.parsers import string_input_parser
+from utils.utils import gen_otp
+from utils.utils import sender
 
 
 # app logic and function codes are in the class of booking system
 class BookingSystem:
-    def __init__(self, person_name, person_email, address, menucard):
-        self.person = person_name
-        self.email = person_email
-        self.address = address
-        self.ordereditems = []
-        self.Dishes = menucard
-        self.wishinghim()
+    def __init__(self, menu):
+        self.menu = menu
+        self.customer = None
 
     # command line welcome message, display menu card and call dish selector
     def wishinghim(self):
-        print("\n Hey," + self.person + "\n Welcome to our Restaurant \n")
+        print("\n Hey," + self.customer.name + "\n Welcome to our Restaurant \n")
         self.showMenucard()
         self.dishSelector()
 
@@ -33,7 +31,7 @@ class BookingSystem:
             "{:10}{:35}{:5}".format("Item No.", "Items", "Price (\u00A3)"),
             "\n{:_>55}".format("_"),
         )
-        for Dish in self.Dishes:
+        for Dish in self.menu:
             print("{:<10}{:35}{:5}".format(count + 1, Dish["Items"], Dish["Price"]))
             count += 1
         print(
@@ -62,19 +60,19 @@ class BookingSystem:
     # Edit option after ordered items and any corrections
     def editList(self):
         # Showing ordered Items this codes.
-        for orderItem in self.ordereditems:
+        for orderItem in self.customer.items:
             print(orderItem)
         print("_______________________________________ \n editor is on \n _______________________________________")
         editKey = int(input("Enter your want to edit Serial No: "))
-        if editKey <= len(self.ordereditems):
+        if editKey <= len(self.customer.items):
             print("if you want to delete item type--'D' \n if you want to edit quality of item type-- 'Q'")
             choice = input("Type your Choice: ")
             if choice == "D" or choice == "d":
-                self.ordereditems.pop(editKey - 1)
+                self.customer.items.pop(editKey - 1)
                 print("sucessfully deleted!")
             if choice == "Q" or choice == "q":
                 quantity = int(input("Enter your Change Quantity of Dish: "))
-                self.ordereditems[editKey - 1]["Quantity"] = quantity
+                self.customer.items[editKey - 1]["Quantity"] = quantity
 
                 print("sucessfully changed Quantity! \n_______________________________________")
 
@@ -88,18 +86,18 @@ class BookingSystem:
 
     # Select Dishes by serial number , ordering and mentioning quantiy.
     def selectDishes(self):
-        for orderItem in self.ordereditems:
+        for orderItem in self.customer.items:
             print(orderItem)
         print("_______________________________________ \n Select your Dish \n_______________________________________")
 
         notFinished = True
         while notFinished:
             sltDishId = integer_input_parser("Enter Item No. : ")
-            if sltDishId <= len(self.Dishes):
-                selDish = self.Dishes[sltDishId - 1]
+            if sltDishId <= len(self.menu):
+                selDish = self.menu[sltDishId - 1]
                 quantity = self.selectQuantity()
                 selDish["Quantity"] = quantity
-                self.ordereditems.append(selDish)
+                self.customer.items.append(selDish)
                 print("sucessfully registered \n_______________________________________")
                 notFinished = False
             else:
@@ -109,7 +107,7 @@ class BookingSystem:
     # This outputs current list ordered pfrice
     def currentRateItems(self):
         total = 0
-        for items in self.ordereditems:
+        for items in self.customer.items:
             peritem = items["Price"] * items["Quantity"]
             total += peritem
         return total
@@ -126,7 +124,7 @@ class BookingSystem:
 
     # aggregate the finalised items
     def finalisedItems(self):
-        return self.ordereditems
+        return self.customer.items
 
     # Editing frist entered mail and it will otp authentication process
     def editEmail(self):
@@ -137,7 +135,7 @@ class BookingSystem:
         sender(changeEmail, "verification for change new email ID", message)
         verify = input("Enter you Otp number recieved in mail: ")
         if verify == Otp:
-            self.email = changeEmail
+            self.customer.email = changeEmail
 
     # Final showing of ordered list and here can delete items and go to email process
     def finalSltDishs(self):
@@ -145,7 +143,7 @@ class BookingSystem:
         print(
             "________________________________________________ \n Item No. --*-- Items--------*-- Price -------*-- Quantity"
         )
-        for orderItem in self.ordereditems:
+        for orderItem in self.customer.items:
             S, Is, Pe, Qy = (
                 str(count + 1),
                 orderItem["Items"],
@@ -155,12 +153,12 @@ class BookingSystem:
             print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00A3 -------*-- " + Qy + "-Qty")
             count += 1
         print("********* total amount:" + str(self.currentRateItems()) + "\u00A3 ******")
-        print("\n Delivery address:" + str(self.address) + "\n")
+        print("\n Delivery address:" + str(self.customer.address) + "\n")
         waittoconfirm = True
         while waittoconfirm:
             print(
                 "_____________________________________________________\n please confirm your email ID '"
-                + self.email
+                + self.customer.email
                 + "' as bill and payment option will be sent via email. \n To edit email id type--'M'",
                 " \n To edit items type--'E' \n Show Ordered list again type--'S' \n Confirm Your final Order type--'O' ",
             )
@@ -174,7 +172,7 @@ class BookingSystem:
                 waittoconfirm = False
             elif choice == "S" or choice == "s":
                 count = 0
-                for orderItem in self.ordereditems:
+                for orderItem in self.customer.items:
                     S, Is, Pe, Qy = (
                         str(count + 1),
                         orderItem["Items"],
@@ -187,30 +185,23 @@ class BookingSystem:
             elif choice == "D" or choice == "d":
                 exit()
 
-
-# 6 digit number random generate
-def gen_otp():
-    val = ""
-    for i in range(0, 6):
-        ran = random.randrange(0, 10)
-        val += str(ran)
-
-    return val
+    def initialise(self, customer: Customer):
+        self.customer = customer
 
 
-# mail  sender option
-def sender(to_mail: str, subject: str, messages: str):
-    server = smtplib.SMTP(host="smtp.gmail.com", port=587)
-    # Put the SMTP connection in TLS (Transport Layer Security) mode. All SMTP commands that follow will be encrypted
-    server.starttls()
-    # Log in on an SMTP server that requires authentication. The arguments are the username and the password to authenticate with.
-    server.login("hostemail", "enter_your_apikey")
-    emails = EmailMessage()
-    emails["From"] = "hostemail"
-    emails["To"] = to_mail
-    emails["Subject"] = subject
-    emails.set_content(messages)
-    server.send_message(emails)
+def register_form():
+    email = None
+    name = None
+    address = None
+    while not email:
+        email = string_input_parser("input email: ", Customer.validate_customer_email)
+    while not name:
+        name = string_input_parser("input name: ", Customer.validate_name)
+    while not address:
+        address = string_input_parser("input address: ", Customer.validate_address)
+
+    customer = Customer(email=email, name=name, address=address)
+    return customer
 
 
 if __name__ == "__main__":
@@ -218,16 +209,25 @@ if __name__ == "__main__":
         "\n ************ Welcome to online booking system ************",
         "\n \n To order food -- type 'y' \n To quit -- type 'n'",
     )
-
-    gateQuestion = input(" \n type your choice: ")
+    session = True
+    menu = None
     with open("menucard.json") as json_file:
-        Dishes = json.load(json_file)
-    if gateQuestion == "y" or gateQuestion == "Y":
-        print("\n ------------------------------------------")
-        name = input("Enter your name: ")
-        email = input("Enter your email id: ")
-        address = input("Enter your address: ")
-        customer = BookingSystem(name, email, address, Dishes)
+        menu = json.load(json_file)
 
-    elif gateQuestion == "n" or gateQuestion == "N":
-        exit()
+    if not menu:
+        raise FileNotFoundError("No file was found for the menu assert that menucard.json exists in the directory")
+
+    booking_system = BookingSystem(menu)
+    while session:
+        choice = input(" \n type your choice: ")
+        available_options = ["y", "n"]
+        if not is_valid_choice(choice, available_options):
+            continue
+
+        if choice.casefold() == "y".casefold():
+            customer = register_form()
+            booking_system.initialise(customer)
+            booking_system.wishinghim()
+
+        if choice.casefold() == "n".casefold():
+            exit()
