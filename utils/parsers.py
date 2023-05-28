@@ -1,4 +1,7 @@
-def string_input_parser(prompt: str):
+from typing import Any, Optional
+
+
+def string_input_parser(prompt: str, validator: Optional[callable] = None):
     """
     Validates that a users input, provided to pythons `input()` function, is a string
     :param
@@ -9,6 +12,11 @@ def string_input_parser(prompt: str):
     while True:
         try:
             parsed_value: str = input(prompt)
+            if validator:
+                is_valid = validator(parsed_value)
+                if is_valid:
+                    break
+                continue
             break
         except ValueError:
             print("something went wrong")
@@ -54,3 +62,7 @@ def integer_input_parser(prompt: str):
                 continue
 
     return parsed_value
+
+
+def is_valid_choice(input_value: Any, options: list) -> bool:
+    return input_value in options

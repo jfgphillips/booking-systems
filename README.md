@@ -6,4 +6,3 @@ The source of this code is https://github.com/Joel-T-George/Booking-System-in-co
 
 Minor changes have been made to improve the readability of code. The code retains most of the 
 original structure and logic.
-
