@@ -1,5 +1,5 @@
 import json
-import re
+from typing import Optional, List, Dict
 
 from utils.customer import Customer
 from utils.parsers import integer_input_parser
@@ -11,9 +11,22 @@ from utils.utils import sender
 
 # app logic and function codes are in the class of booking system
 class BookingSystem:
-    def __init__(self, menu):
+    def __init__(self, menu, customer: Optional[Customer] = None):
         self.menu = menu
-        self.customer = None
+        self._customer = customer
+
+    @property
+    def customer(self):
+        if not self._customer:
+            self._customer = Customer.from_cli_input()
+        return self._customer
+
+    @customer.setter
+    def customer(self, customer: Customer) -> bool:
+        if not isinstance(customer, Customer):
+            return False
+        self._customer = customer
+        return True
 
     # command line welcome message, display menu card and call dish selector
     def wishinghim(self):
@@ -76,7 +89,7 @@ class BookingSystem:
 
                 print("sucessfully changed Quantity! \n_______________________________________")
 
-    def selectQuantity(self):
+    def selectQuantity(self) -> int:
         try:
             quantity = int(input("Enter Quantity of Dish: "))
             return quantity
@@ -105,7 +118,7 @@ class BookingSystem:
                 notFinished = True
 
     # This outputs current list ordered pfrice
-    def currentRateItems(self):
+    def currentRateItems(self) -> int:
         total = 0
         for items in self.customer.items:
             peritem = items["Price"] * items["Quantity"]
@@ -123,7 +136,7 @@ class BookingSystem:
             return False
 
     # aggregate the finalised items
-    def finalisedItems(self):
+    def finalisedItems(self) -> List[Dict[str, int]]:
         return self.customer.items
 
     # Editing frist entered mail and it will otp authentication process
@@ -185,30 +198,8 @@ class BookingSystem:
             elif choice == "D" or choice == "d":
                 exit()
 
-    def initialise(self, customer: Customer):
-        self.customer = customer
-
-
-def register_form():
-    email = None
-    name = None
-    address = None
-    while not email:
-        email = string_input_parser("input email: ", Customer.validate_customer_email)
-    while not name:
-        name = string_input_parser("input name: ", Customer.validate_name)
-    while not address:
-        address = string_input_parser("input address: ", Customer.validate_address)
-
-    customer = Customer(email=email, name=name, address=address)
-    return customer
-
 
 if __name__ == "__main__":
-    print(
-        "\n ************ Welcome to online booking system ************",
-        "\n \n To order food -- type 'y' \n To quit -- type 'n'",
-    )
     session = True
     menu = None
     with open("menucard.json") as json_file:
@@ -219,14 +210,18 @@ if __name__ == "__main__":
 
     booking_system = BookingSystem(menu)
     while session:
-        choice = input(" \n type your choice: ")
+        print(
+            "\n ************ Welcome to online booking system ************",
+            "\n \n To order food -- type 'y' \n To quit -- type 'n'",
+        )
+        choice: str = string_input_parser("Type Your Choice:")
         available_options = ["y", "n"]
         if not is_valid_choice(choice, available_options):
             continue
 
         if choice.casefold() == "y".casefold():
-            customer = register_form()
-            booking_system.initialise(customer)
+            customer = Customer.from_cli_input()
+            booking_system.customer = customer
             booking_system.wishinghim()
 
         if choice.casefold() == "n".casefold():
