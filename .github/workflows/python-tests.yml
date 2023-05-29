@@ -51,9 +51,7 @@ jobs:
         name: coverage-rep
         path: htmlcov/
 
-    - name: Add Coverage PR Comment
-      uses: marocchino/sticky-pull-request-comment@v2
-      if: github.event_name == 'pull_request'
+    - name: PR comment with file
+      uses: thollander/actions-comment-pull-request@v2
       with:
-        recreate: true
-        path: coverage_table.md
+        filePath: coverage_table.md
