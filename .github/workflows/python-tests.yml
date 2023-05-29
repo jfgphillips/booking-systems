@@ -48,7 +48,7 @@ jobs:
     - name: Upload Coverage
       uses: actions/upload-artifact@v3
       with:
-        name: coverage-rep
+        name: coverage-rep-${{ github.event.pull_request.title }}
         path: htmlcov/
 
     # only post coverage to PR
