@@ -55,3 +55,7 @@ jobs:
       uses: thollander/actions-comment-pull-request@v2
       with:
         filePath: coverage_table.md
+        message: |
+          _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
+        comment_tag: execution
+        mode: recreate
