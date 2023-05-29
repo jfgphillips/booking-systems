@@ -10,7 +10,7 @@ on:
     branches: [ "master" ]
 
 permissions:
-  contents: read
+   pull-requests: write
 
 jobs:
   build:
@@ -42,7 +42,7 @@ jobs:
     - name: Run coverage
       run: |
         coverage run -m pytest
-        coverage report
+        coverage report --format=markdown --omit="tests/*" > coverage_table.md
         coverage html
 
     - name: Upload Coverage
@@ -50,3 +50,10 @@ jobs:
       with:
         name: coverage-rep
         path: htmlcov/
+
+    - name: PR comment with file
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        filePath: coverage_table.md
+        comment_tag: coverage_table
+        mode: recreate

@@ -1,4 +1,15 @@
+import sys
 from typing import Any, Optional, Callable
+
+
+def handle_keyboard_interrupt():
+    """Exits the program or continues as usual"""
+    print("You pressed control-c, you want to quit? \n\n To quit press 'Q' \n To continue press 'C'")
+    choice = string_input_parser("enter your choice: ")
+    if choice.casefold() == "Q".casefold():
+        exit()
+    if choice.casefold() == "C".casefold():
+        return
 
 
 def string_input_parser(prompt: str, validator: Optional[Callable[[str], bool]] = None) -> str:
@@ -18,16 +29,10 @@ def string_input_parser(prompt: str, validator: Optional[Callable[[str], bool]] 
                     break
                 continue
             break
-        except ValueError:
-            print("something went wrong")
+        except ValueError as e:
+            print(f"something went wrong with message: {e}")
         except KeyboardInterrupt:
-            print("You pressed control-c, you want to quit? \n\n To quit press 'Q' \n To continue press 'C'")
-            cho = string_input_parser("Enter your choice: ")
-            if cho == "Q" or cho == "q":
-                exit()
-            if cho == "C" or cho == "c":
-                continue
-
+            handle_keyboard_interrupt()
     return parsed_value
 
 
@@ -52,17 +57,10 @@ def integer_input_parser(prompt: str) -> Optional[int]:
         except ValueError:
             print("Please enter number not a word!")
         except KeyboardInterrupt:
-            print(
-                "You pressed control-c ,you want to quit ? \n\n you want to quit press 'Q' you \n you want continue press 'C'"
-            )
-            choice = string_input_parser("enter your next step: ")
-            if choice == "Q" or choice == "q":
-                exit()
-            if choice == "C" or choice == "c":
-                continue
-
+            handle_keyboard_interrupt()
     return parsed_value
 
 
 def is_valid_choice(input_value: Any, options: list) -> bool:
+    # TODO: Depreciate in favour of a better structure; maybe fold into the parsers?
     return input_value in options
