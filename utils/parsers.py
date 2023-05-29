@@ -1,7 +1,7 @@
-from typing import Any, Optional
+from typing import Any, Optional, Callable
 
 
-def string_input_parser(prompt: str, validator: Optional[callable] = None):
+def string_input_parser(prompt: str, validator: Optional[Callable[[str], bool]] = None) -> str:
     """
     Validates that a users input, provided to pythons `input()` function, is a string
     :param
@@ -31,7 +31,7 @@ def string_input_parser(prompt: str, validator: Optional[callable] = None):
     return parsed_value
 
 
-def integer_input_parser(prompt: str):
+def integer_input_parser(prompt: str) -> Optional[int]:
     """
     Validates that a users input, provided to pythons `input()` function, is an integer
     The logic follows the following logic
