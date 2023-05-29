@@ -51,7 +51,9 @@ jobs:
         name: coverage-rep
         path: htmlcov/
 
+    # only post coverage to PR
     - name: PR comment with file
+      if: github.event_name == 'pull_request'
       uses: thollander/actions-comment-pull-request@v2
       with:
         filePath: coverage_table.md
