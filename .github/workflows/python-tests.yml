@@ -10,7 +10,7 @@ on:
     branches: [ "master" ]
 
 permissions:
-   contents: write
+   pull-requests: write
 
 jobs:
   build:
@@ -51,9 +51,11 @@ jobs:
         name: coverage-rep
         path: htmlcov/
 
-    - name: PR comment with file
-      uses: thollander/actions-comment-pull-request@v2
-      with:
-        filePath: coverage_table.md
-        comment_tag: coverage_table
-        mode: recreate
+    # only post coverage to PR
+    if: github.event_name == 'pull_request'
+      - name: PR comment with file
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: coverage_table.md
+          comment_tag: coverage_table
+          mode: recreate
