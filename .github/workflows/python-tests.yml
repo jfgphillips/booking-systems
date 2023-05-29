@@ -52,10 +52,10 @@ jobs:
         path: htmlcov/
 
     # only post coverage to PR
-    if: github.event_name == 'pull_request'
-      - name: PR comment with file
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          filePath: coverage_table.md
-          comment_tag: coverage_table
-          mode: recreate
+    - name: PR comment with file
+      if: github.event_name == 'pull_request'
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        filePath: coverage_table.md
+        comment_tag: coverage_table
+        mode: recreate
