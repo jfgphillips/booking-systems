@@ -90,8 +90,11 @@ class BookingSystem:
     # command line welcome message, display menu card and call dish selector
     def wishinghim(self):
         print("\n Hey," + self.customer.name + "\n Welcome to our Restaurant \n")
-        self.menu_configuration.construct_menucard(self.menu)
+        self.showMenucard()
         self.main_menu()
+
+    def showMenucard(self):
+        self.menu_configuration.construct_menucard(self.menu)
 
     def main_menu(self):
         print("current total: " + str(self.currentRateItems()) + "\u00A3")
