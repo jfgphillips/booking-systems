@@ -1,5 +1,6 @@
 import json
-from typing import Optional, List, Dict
+from dataclasses import dataclass, field
+from typing import Optional, List, Dict, Union
 
 from utils.customer import Customer
 from utils.parsers import integer_input_parser
@@ -9,11 +10,49 @@ from utils.utils import gen_otp
 from utils.utils import sender
 
 
+@dataclass
+class MenuConfiguration:
+    width: int = 55
+
+
+@dataclass
+class ChoiceConfiguration:
+    width: int = 55
+    choice_help_area: int = field(init=False)
+    choice_char_area: int = field(init=False)
+
+    def __post_init__(self):
+        self.choice_help_area = self.width - 6
+        self.choice_char_area = 0
+
+    def construct_choice_table(self, choices: Dict[str, str], title):
+        """
+        :param choices:
+            dict containing prompt and options
+        :param title: title for the selection message
+        :return:
+        """
+        message = f"{'_'*self.width}\n" f"{title:^{self.width}}\n" f"{'_'*self.width}\n"
+
+        for choice_help, choice_char in choices.items():
+            choice_help_formatted = f"{choice_help} - Type"
+            choice_char_formatted = f"'{choice_char}'"
+            message += f"To {choice_help_formatted:.<{self.choice_help_area}}{choice_char_formatted:.>{self.choice_char_area}}\n"
+
+        print(message)
+
+    @staticmethod
+    def choice_validator(choice, choices) -> bool:
+        return choice.casefold() in list(map(str.casefold, choices))
+
+
 # app logic and function codes are in the class of booking system
 class BookingSystem:
-    def __init__(self, menu, customer: Optional[Customer] = None):
+    def __init__(self, menu: List[Dict[str, Union[str, int]]], customer: Optional[Customer] = None):
         self.menu = menu
         self._customer = customer
+        self.menu_configuration = MenuConfiguration()
+        self.choice_configuratoin = ChoiceConfiguration()
 
     @property
     def customer(self):
@@ -34,41 +73,45 @@ class BookingSystem:
         self.showMenucard()
         self.dishSelector()
 
+    def main_menu(self):
+        choices = {
+            "select dish": "S",
+            "edit order": "E",
+            "complete order": "K",
+        }
+        self.choice_configuratoin.construct_choice_table(
+            choices=choices, title="The above menu can be used to place your order"
+        )
+        choice = string_input_parser("input choice: ", validator=ChoiceConfiguration.choice_validator)
+
+        if choice == "E" or choice == "e":
+            self.editList()
+        elif choice == "S" or choice == "s":
+            self.selectDishes()
+        elif choice == "K" or choice == "k" and self.toCompleteOrder():
+            self.finalSltDishs()
+
     # Showing menucard.
     def showMenucard(self):
-        print(" This is our Menu ")
-        count = 0
+        message = "This is our menu\n"
+        upper_score = "\u203e"
         # table header printing line here
-        print(
-            "{:_>55} \n".format("_"),
-            "{:10}{:35}{:5}".format("Item No.", "Items", "Price (\u00A3)"),
-            "\n{:_>55}".format("_"),
+        message += (
+            f"{'_'*self.menu_configuration.width}\n"
+            f"{'Item No.':^10}{'Items':^35}{'Price £':<5}\n"
+            f"{upper_score*self.menu_configuration.width}\n"
         )
-        for Dish in self.menu:
-            print("{:<10}{:35}{:5}".format(count + 1, Dish["Items"], Dish["Price"]))
-            count += 1
-        print(
-            "____________________________________________________ \n",
-            "The above menu can be used to place your order",
-            "\n",
-            "\n To select dish - type 'S' \n To edit order - type 'E'  \n To complete order - press 'K'",
-            "\n \n ",
-        )
+        for index, dish in enumerate(self.menu, 1):
+            message += f"{index:^10}{dish['Items']:^35}{dish['Price']:<5}\n"
+        message += f"{'_'*self.menu_configuration.width}"
 
     # home functions to ordering ,editing,and complete ordering
     def dishSelector(self):
         waitStillSay = True
         while waitStillSay:
-            print("current total: " + str(self.currentRateItems()) + "\u00A3")
+            print("current total: " + str(self.currentRateItems()) + "\u00a3")
             customer_decision = input("*****Enter your Choice: ")
-            if customer_decision == "E" or customer_decision == "e":
-                self.editList()
-            elif customer_decision == "S" or customer_decision == "s":
-                self.selectDishes()
-            elif customer_decision == "K" or customer_decision == "k":
-                if self.toCompleteOrder() == True:
-                    self.finalSltDishs()
-                    waitStillSay = False
+            waitStillSay = False
 
     # Edit option after ordered items and any corrections
     def editList(self):
@@ -163,9 +206,9 @@ class BookingSystem:
                 str(orderItem["Price"]),
                 str(orderItem["Quantity"]),
             )
-            print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00A3 -------*-- " + Qy + "-Qty")
+            print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00a3 -------*-- " + Qy + "-Qty")
             count += 1
-        print("********* total amount:" + str(self.currentRateItems()) + "\u00A3 ******")
+        print("********* total amount:" + str(self.currentRateItems()) + "\u00a3 ******")
         print("\n Delivery address:" + str(self.customer.address) + "\n")
         waittoconfirm = True
         while waittoconfirm:
@@ -192,9 +235,9 @@ class BookingSystem:
                         str(orderItem["Price"]),
                         str(orderItem["Quantity"]),
                     )
-                    print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00A3 -------*-- " + Qy + "-Qty")
+                    print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00a3 -------*-- " + Qy + "-Qty")
                     count += 1
-                print("total price: " + str(self.currentRateItems()) + "\u00A3")
+                print("total price: " + str(self.currentRateItems()) + "\u00a3")
             elif choice == "D" or choice == "d":
                 exit()
 

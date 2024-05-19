@@ -1,13 +1,19 @@
 import pytest
-import booking
+from booking import BookingSystem
 
 
 @pytest.mark.parametrize(
-    "domain",
-    [("gmail.com"), ("yahoo.com"), ("hotmail.com"), ("aol.com"), ("icloud.com")],
+    "menucard",
+    [
+        ([{"Items": "Fish and Chips", "Price": 10}, {"Items": "Potato", "Price": 8}, {"Items": "Bhaji", "Price": 5}]),
+        (
+            [
+                {"Items": "Fish and Chips", "Price": 10},
+                {"Items": "Potato", "Price": 8},
+            ]
+        ),
+    ],
 )
-def test_sender_hostname(domain):
-    test_email_address = f"jfgphillips@{domain}"
-    pass
-    # sender = booking.sender()
-    # pass
+def test_booking_system_show_menucard(menucard):
+    booking_system = BookingSystem(menu=menucard)
+    print(booking_system.showMenucard())
