@@ -94,7 +94,7 @@ class BookingSystem:
     # Showing menucard.
     def showMenucard(self):
         message = "This is our menu\n"
-        upper_score = "\u203E"
+        upper_score = "\u203e"
         # table header printing line here
         message += (
             f"{'_'*self.menu_configuration.width}\n"
@@ -109,7 +109,7 @@ class BookingSystem:
     def dishSelector(self):
         waitStillSay = True
         while waitStillSay:
-            print("current total: " + str(self.currentRateItems()) + "\u00A3")
+            print("current total: " + str(self.currentRateItems()) + "\u00a3")
             customer_decision = input("*****Enter your Choice: ")
             waitStillSay = False
 
@@ -206,9 +206,9 @@ class BookingSystem:
                 str(orderItem["Price"]),
                 str(orderItem["Quantity"]),
             )
-            print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00A3 -------*-- " + Qy + "-Qty")
+            print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00a3 -------*-- " + Qy + "-Qty")
             count += 1
-        print("********* total amount:" + str(self.currentRateItems()) + "\u00A3 ******")
+        print("********* total amount:" + str(self.currentRateItems()) + "\u00a3 ******")
         print("\n Delivery address:" + str(self.customer.address) + "\n")
         waittoconfirm = True
         while waittoconfirm:
@@ -235,9 +235,9 @@ class BookingSystem:
                         str(orderItem["Price"]),
                         str(orderItem["Quantity"]),
                     )
-                    print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00A3 -------*-- " + Qy + "-Qty")
+                    print(" " + S + " --*-- " + Is + "--------*-- " + Pe + "\u00a3 -------*-- " + Qy + "-Qty")
                     count += 1
-                print("total price: " + str(self.currentRateItems()) + "\u00A3")
+                print("total price: " + str(self.currentRateItems()) + "\u00a3")
             elif choice == "D" or choice == "d":
                 exit()
 
