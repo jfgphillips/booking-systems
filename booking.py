@@ -14,6 +14,27 @@ from utils.utils import sender
 class MenuConfiguration:
     width: int = 55
 
+    def construct_menucard(self, menu: List[Dict[str, Union[str, int]]]):
+        message = "This is our menu\n"
+        upper_score = "\u203e"
+        # table header printing line here
+        message += (
+            f"{'_' * self.width}\n" f"{'Item No.':^10}{'Items':^35}{'Price £':<5}\n" f"{upper_score * self.width}\n"
+        )
+        for index, dish in enumerate(menu, 1):
+            message += f"{index:^10}{dish['Items']:^35}{dish['Price']:<5}\n"
+
+        message += f"{'_' * self.width}"
+        print(message)
+
+
+@dataclass
+class ChoiceValidator:
+    choices: dict
+
+    def is_valid_choice(self, choice):
+        return choice.casefold() in list(map(str.casefold, self.choices.values()))
+
 
 @dataclass
 class ChoiceConfiguration:
@@ -41,10 +62,6 @@ class ChoiceConfiguration:
 
         print(message)
 
-    @staticmethod
-    def choice_validator(choice, choices) -> bool:
-        return choice.casefold() in list(map(str.casefold, choices))
-
 
 # app logic and function codes are in the class of booking system
 class BookingSystem:
@@ -52,7 +69,7 @@ class BookingSystem:
         self.menu = menu
         self._customer = customer
         self.menu_configuration = MenuConfiguration()
-        self.choice_configuratoin = ChoiceConfiguration()
+        self.choice_configuration = ChoiceConfiguration()
 
     @property
     def customer(self):
@@ -71,47 +88,32 @@ class BookingSystem:
     def wishinghim(self):
         print("\n Hey," + self.customer.name + "\n Welcome to our Restaurant \n")
         self.showMenucard()
-        self.dishSelector()
+        self.main_menu()
+
+    def showMenucard(self):
+        self.menu_configuration.construct_menucard(self.menu)
 
     def main_menu(self):
+        print("current total: " + str(self.currentRateItems()) + "\u00a3")
         choices = {
             "select dish": "S",
             "edit order": "E",
             "complete order": "K",
+            "edit email": "M",
         }
-        self.choice_configuratoin.construct_choice_table(
+        self.choice_configuration.construct_choice_table(
             choices=choices, title="The above menu can be used to place your order"
         )
-        choice = string_input_parser("input choice: ", validator=ChoiceConfiguration.choice_validator)
-
-        if choice == "E" or choice == "e":
+        choice_validator = ChoiceValidator(choices=choices)
+        choice = string_input_parser("input choice: ", validator=choice_validator.is_valid_choice)
+        if choice == "M" or choice == "m":
+            self.editEmail()
+        elif choice == "E" or choice == "e":
             self.editList()
         elif choice == "S" or choice == "s":
             self.selectDishes()
         elif choice == "K" or choice == "k" and self.toCompleteOrder():
             self.finalSltDishs()
-
-    # Showing menucard.
-    def showMenucard(self):
-        message = "This is our menu\n"
-        upper_score = "\u203e"
-        # table header printing line here
-        message += (
-            f"{'_'*self.menu_configuration.width}\n"
-            f"{'Item No.':^10}{'Items':^35}{'Price £':<5}\n"
-            f"{upper_score*self.menu_configuration.width}\n"
-        )
-        for index, dish in enumerate(self.menu, 1):
-            message += f"{index:^10}{dish['Items']:^35}{dish['Price']:<5}\n"
-        message += f"{'_'*self.menu_configuration.width}"
-
-    # home functions to ordering ,editing,and complete ordering
-    def dishSelector(self):
-        waitStillSay = True
-        while waitStillSay:
-            print("current total: " + str(self.currentRateItems()) + "\u00a3")
-            customer_decision = input("*****Enter your Choice: ")
-            waitStillSay = False
 
     # Edit option after ordered items and any corrections
     def editList(self):
@@ -253,14 +255,11 @@ if __name__ == "__main__":
 
     booking_system = BookingSystem(menu)
     while session:
-        print(
-            "\n ************ Welcome to online booking system ************",
-            "\n \n To order food -- type 'y' \n To quit -- type 'n'",
-        )
-        choice: str = string_input_parser("Type Your Choice:")
-        available_options = ["y", "n"]
-        if not is_valid_choice(choice, available_options):
-            continue
+        choice_configuration = ChoiceConfiguration()
+        choices = {"order food": "Y", "quit": "Q"}
+        choice_validator = ChoiceValidator(choices=choices)
+        choice_configuration.construct_choice_table(choices=choices, title="welcome to online booking system")
+        choice: str = string_input_parser("Type Your Choice:", validator=choice_validator.is_valid_choice)
 
         if choice.casefold() == "y".casefold():
             customer = Customer.from_cli_input()
