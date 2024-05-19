@@ -16,12 +16,10 @@ class MenuConfiguration:
 
     def construct_menucard(self, menu: List[Dict[str, Union[str, int]]]):
         message = "This is our menu\n"
-        upper_score = "\u203E"
+        upper_score = "\u203e"
         # table header printing line here
         message += (
-            f"{'_' * self.width}\n"
-            f"{'Item No.':^10}{'Items':^35}{'Price £':<5}\n"
-            f"{upper_score * self.width}\n"
+            f"{'_' * self.width}\n" f"{'Item No.':^10}{'Items':^35}{'Price £':<5}\n" f"{upper_score * self.width}\n"
         )
         for index, dish in enumerate(menu, 1):
             message += f"{index:^10}{dish['Items']:^35}{dish['Price']:<5}\n"
@@ -35,7 +33,6 @@ class ChoiceValidator:
     choices: dict
 
     def is_valid_choice(self, choice):
-
         return choice.casefold() in list(map(str.casefold, self.choices.values()))
 
 
@@ -97,7 +94,7 @@ class BookingSystem:
         self.menu_configuration.construct_menucard(self.menu)
 
     def main_menu(self):
-        print("current total: " + str(self.currentRateItems()) + "\u00A3")
+        print("current total: " + str(self.currentRateItems()) + "\u00a3")
         choices = {
             "select dish": "S",
             "edit order": "E",
